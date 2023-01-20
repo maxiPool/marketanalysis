@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class MarketAnalysisApplication
 
 fun main(args: Array<String>) {
-    runApplication<MarketAnalysisApplication>(*args)
+  runApplication<MarketAnalysisApplication>(*args)
 }
