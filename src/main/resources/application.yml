@@ -1,1 +1,84 @@
+info:
+  version: "@project.version@"
+  dependencies:
+    boot:
+      version: "@spring-boot.version@"
+    cloud:
+      version: "@spring-cloud.version@"
 
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+  compression:
+    enabled: true
+    min-response-size: 4KB
+    mime-types:
+      - application/json
+
+#springdoc:
+#  show-actuator: false
+#  api-docs:
+#    path: /api-docs
+
+spring:
+  main:
+    allow-bean-definition-overriding: false
+  application:
+    name: @project.artifactId@
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  jackson:
+    property-naming-strategy: LOWER_CAMEL_CASE
+    default-property-inclusion: non_null
+    serialization:
+      write_dates_as_timestamps: false
+      write_dates_with_zone_id: true
+      write_bigdecimal_as_plain: true
+    deserialization:
+      fail_on_unknown_properties: false
+      adjust_dates_to_context_time_zone: false
+      use_big_decimal_for_floats: true
+
+#  cloud:
+#    config:
+#      enabled: true
+#      username: max
+#      password: ${CONFIGSERVER_PASSWORD}
+#  config:
+#    import: optional:configserver:${configServerUrl}
+
+management:
+  endpoints:
+    web:
+      cors:
+        allowed-origins: "*"
+        allowed-methods:
+          - "GET"
+          - "POST"
+      exposure:
+        # for Config Client to access the Config Server
+        include: "*"
+    jmx:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
+    logfile:
+      enabled: true
+    health:
+      show-details: always
+  info:
+    java:
+      enabled: true
+    env:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

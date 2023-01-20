@@ -1,0 +1,5 @@
+###
+GET {{uri}}/api/v1/hello
+Authorization: Basic {{username}} {{password}}
+
+###
