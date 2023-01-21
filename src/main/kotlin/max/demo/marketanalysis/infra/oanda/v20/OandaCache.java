@@ -4,21 +4,24 @@ import com.oanda.v20.pricing.ClientPrice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import reactor.core.publisher.Sinks;
+import reactor.core.publisher.Sinks.Many;
 
 @Component
 @Slf4j
 public class OandaCache {
 
-  private final ConcurrentMap<String, Flux<ClientPrice>> pricesFluxCache = new ConcurrentHashMap<>();
+  private final Many<ClientPrice> clientPriceBehaviorSubject = Sinks
+          .many()
+          .replay()
+          .all();
 
-  public void put(String instrumentId, ClientPrice clientPrice) {
-    pricesFluxCache.compute(instrumentId, (__, v) -> {
-      // TODO: push new price to observable
-      return null;
-    });
+  public void emitNewPrice(ClientPrice clientPrice) {
+    clientPriceBehaviorSubject.tryEmitNext(clientPrice);
+  }
+
+  public Flux<ClientPrice> getPrices() {
+    return clientPriceBehaviorSubject.asFlux();
   }
 
 }

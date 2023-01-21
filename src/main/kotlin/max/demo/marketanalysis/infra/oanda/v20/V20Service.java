@@ -23,7 +23,7 @@ public class V20Service {
   private final OandaCache oandaCache;
   private final ScheduledExecutorService poller = newSingleThreadScheduledExecutor();
 
-  private volatile DateTime lastPollTime = null;
+  private volatile DateTime lastDataPointInTime = null;
 
   public void pollPrices() {
     var ctx = new ContextBuilder(v20Properties.url())
@@ -31,24 +31,39 @@ public class V20Service {
         .setApplication("PricePolling")
         .build();
 
-    var instruments = List.of("EUR_USD", "USD_JPY", "GBP_USD", "USD_CHF");
+    var instruments = List.of("EUR_USD", "USD_JPY", "GBP_USD", "USD_CHF", "USD_CAD", "AUD_USD");
     var request = new PricingGetRequest(v20Properties.accountId(), instruments);
 
     poller.scheduleAtFixedRate(() -> poll(ctx, request), 0L, 1000L, MILLISECONDS);
   }
 
   private void poll(Context ctx, PricingGetRequest request) {
-    if (lastPollTime != null) {
-      log.info("Polling since {}", lastPollTime);
-      request.setSince(lastPollTime);
+    if (lastDataPointInTime != null) {
+      request.setSince(lastDataPointInTime);
     }
     try {
       var resp = ctx.pricing.get(request);
-      resp.getPrices().forEach(p -> oandaCache.put(p.getInstrument().toString(), p));
-      lastPollTime = resp.getTime();
+      resp.getPrices().forEach(oandaCache::emitNewPrice);
+
+      handleLastDataPointInTime(resp.getTime());
     } catch (Exception e) {
       log.error("Error while polling", e);
     }
+  }
+
+  private void handleLastDataPointInTime(DateTime responseTime) {
+    if (lastDataPointInTime == null) {
+      lastDataPointInTime = responseTime;
+      log.info("LastDataPointInTime: {}", lastDataPointInTime);
+      return;
+    }
+
+    var oldLastDataPointInTime = new DateTime(lastDataPointInTime);
+    lastDataPointInTime = responseTime;
+    if (!oldLastDataPointInTime.equals(lastDataPointInTime)) {
+      log.info("LastDataPointInTime: {}", lastDataPointInTime);
+    }
+    // else: do not log!
   }
 
 }
