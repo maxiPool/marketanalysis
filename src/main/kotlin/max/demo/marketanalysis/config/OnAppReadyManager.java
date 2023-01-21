@@ -2,7 +2,7 @@ package max.demo.marketanalysis.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import max.demo.marketanalysis.arbitrager.ArbitrageService;
+import max.demo.marketanalysis.analysis.AnalysisService;
 import max.demo.marketanalysis.infra.oanda.v20.V20Service;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class OnAppReadyManager {
 
   private final V20Service v20Service;
-  private final ArbitrageService arbitrageService;
+  private final AnalysisService analysisService;
 
   @EventListener
   public void onAppReady(ApplicationReadyEvent ignored) {
@@ -22,7 +22,7 @@ public class OnAppReadyManager {
     log.info("[LAUNCHING] {}", message);
 
     v20Service.pollPrices();
-    arbitrageService.subscribeToPrices();
+    analysisService.subscribeToPrices();
 
     log.info("[DONE] {}", message);
   }
