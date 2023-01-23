@@ -2,17 +2,21 @@ package max.demo.marketanalysis.infra.oanda.v20;
 
 import com.oanda.v20.Context;
 import com.oanda.v20.ContextBuilder;
+import com.oanda.v20.account.AccountInstrumentsRequest;
 import com.oanda.v20.pricing.PricingGetRequest;
 import com.oanda.v20.primitives.DateTime;
+import com.oanda.v20.primitives.Instrument;
+import com.oanda.v20.primitives.StringPrimitive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static max.demo.marketanalysis.infra.oanda.v20.OandaAssetsUtil.INSTRUMENT_NAMES;
 
 @Service
 @Slf4j
@@ -31,8 +35,7 @@ public class V20Service {
         .setApplication("PricePolling")
         .build();
 
-    var instruments = List.of("EUR_USD", "USD_JPY", "GBP_USD", "USD_CHF", "USD_CAD", "AUD_USD");
-    var request = new PricingGetRequest(v20Properties.accountId(), instruments);
+    var request = new PricingGetRequest(v20Properties.accountId(), INSTRUMENT_NAMES);
 
     poller.scheduleAtFixedRate(() -> poll(ctx, request), 0L, 1000L, MILLISECONDS);
   }
@@ -43,7 +46,7 @@ public class V20Service {
     }
     try {
       var resp = ctx.pricing.get(request);
-      resp.getPrices().forEach(oandaCache::emitNewPrice);
+      resp.getPrices().forEach(oandaCache::emitNewPrice2);
 
       handleLastDataPointInTime(resp.getTime());
     } catch (Exception e) {
@@ -65,5 +68,32 @@ public class V20Service {
     }
     // else: do not log!
   }
+
+  public void getTradeableInstrumentsForAccount() {
+    var ctx = new ContextBuilder(v20Properties.url())
+        .setToken(v20Properties.token())
+        .setApplication("InstrumentsGetter")
+        .build();
+
+    var accountInstrumentsRequest = new AccountInstrumentsRequest(v20Properties.accountId());
+
+    try {
+      var resp = ctx.account.instruments(accountInstrumentsRequest);
+
+      var instruments = resp.getInstruments();
+
+      log.info("{}",
+          instruments
+              .stream()
+              .map(Instrument::getName)
+              .map(StringPrimitive::toString)
+              .sorted()
+              .collect(Collectors.joining(",", "\"", "\"")));
+
+    } catch (Exception e) {
+      log.error("Error while trying to get tradeable instruments", e);
+    }
+  }
+
 
 }

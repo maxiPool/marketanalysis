@@ -25,4 +25,9 @@ public class DemoSpringBootTest {
     scanner.nextLine(); // wait for user input before ending test
   }
 
+  @Test
+  void should_getTradeableInstruments() {
+    v20Service.getTradeableInstrumentsForAccount();
+  }
+
 }

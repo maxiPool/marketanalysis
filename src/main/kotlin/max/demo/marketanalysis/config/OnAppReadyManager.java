@@ -22,7 +22,8 @@ public class OnAppReadyManager {
     log.info("[LAUNCHING] {}", message);
 
     v20Service.pollPrices();
-    analysisService.subscribeToPrices();
+    // analysisService.subscribeToPrices();
+    analysisService.subscribeToPrices2();
 
     log.info("[DONE] {}", message);
   }

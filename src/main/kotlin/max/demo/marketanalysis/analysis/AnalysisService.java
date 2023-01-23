@@ -31,6 +31,26 @@ public class AnalysisService {
                 }));
   }
 
+  private final Map<String, Integer> dataReceivedFromSink2 = new ConcurrentHashMap<>();
+
+  public void subscribeToPrices2() {
+    oandaCache
+        .getSubjectIds()
+        .subscribe(i -> {
+          oandaCache
+              .getPriceFor(i)
+              .subscribe(clientPrice -> dataReceivedFromSink2
+                  .compute(clientPrice.getInstrument().toString(),
+                      (k, v) -> {
+                        if (v == null) {
+                          v = 0;
+                        }
+                        log.info("{} #{} received from sink2", k, v + 1);
+                        return v + 1;
+                      }));
+        });
+  }
+
   /*
   Note: Use historical data of
     - Forex
