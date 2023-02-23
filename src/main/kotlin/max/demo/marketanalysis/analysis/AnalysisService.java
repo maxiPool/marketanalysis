@@ -1,5 +1,6 @@
 package max.demo.marketanalysis.analysis;
 
+import com.oanda.v20.pricing.ClientPrice;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import max.demo.marketanalysis.infra.oanda.v20.OandaCache;
@@ -17,38 +18,28 @@ public class AnalysisService {
 
   private final Map<String, Integer> dataReceivedFromSink = new ConcurrentHashMap<>();
 
-  public void subscribeToPrices() {
-    oandaCache
-        .getPrices()
-        .subscribe(clientPrice -> dataReceivedFromSink
-            .compute(clientPrice.getInstrument().toString(),
-                (k, v) -> {
-                  if (v == null) {
-                    v = 0;
-                  }
-                  log.info("{} #{} received from sink (behaviorSubject)", k, v + 1);
-                  return v + 1;
-                }));
-  }
-
-  private final Map<String, Integer> dataReceivedFromSink2 = new ConcurrentHashMap<>();
-
   public void subscribeToPrices2() {
     oandaCache
         .getSubjectIds()
-        .subscribe(i -> {
-          oandaCache
-              .getPriceFor(i)
-              .subscribe(clientPrice -> dataReceivedFromSink2
-                  .compute(clientPrice.getInstrument().toString(),
-                      (k, v) -> {
-                        if (v == null) {
-                          v = 0;
-                        }
-                        log.info("{} #{} received from sink2", k, v + 1);
-                        return v + 1;
-                      }));
-        });
+        .subscribe(this::subscribeToNewSubject);
+  }
+
+  private void subscribeToNewSubject(String subject) {
+    oandaCache
+        .getPriceFor(subject)
+        .subscribe(this::subscribeToNewPriceForSubject);
+  }
+
+  private void subscribeToNewPriceForSubject(ClientPrice mostRecentPrice) {
+    dataReceivedFromSink
+        .compute(mostRecentPrice.getInstrument().toString(),
+            (String priceTicker, Integer count) -> {
+              if (count == null) {
+                count = 0;
+              }
+              log.debug("{} #{} received from sink", priceTicker, count + 1);
+              return count + 1;
+            });
   }
 
   /*

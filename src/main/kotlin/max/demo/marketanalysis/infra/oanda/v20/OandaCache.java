@@ -11,34 +11,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Two options
- * 1) use a single Subject for all prices
- * - very simple, but must use replay all to get the price of all the subjects inside the Subject.
- * 2) use a Map of id to Subject (one entry per Subject)
- * - more complex, but more performant to get the latest price for each Subject.
- * - requires a Subject of ids that can replay all the ids
- * - can provide a Subject for each price on which it's now possible to only play latest.
- */
 @Component
 @Slf4j
 public class OandaCache {
 
-  // Option 1
-  private final Many<ClientPrice> clientPriceBehaviorSubject = Sinks
-      .many()
-      .replay()
-      .all();
-
-  public void emitNewPrice(ClientPrice clientPrice) {
-    clientPriceBehaviorSubject.tryEmitNext(clientPrice);
-  }
-
-  public Flux<ClientPrice> getPrices() {
-    return clientPriceBehaviorSubject.asFlux();
-  }
-
-  // Option 2:
+  /**
+   * Use a Subject (Sink) that contains all the 'Instruments' Subjects (Sinks).
+   * <ul>
+   *   <li> any new consumer of the OandaCache can easily subscribe to all the 'Instruments' </li>
+   *   <li> performant to get the latest price for each Subject (Sink) </li>
+   *   <li> requires a Subject (Sink) of ids that can replay all the ids </li>
+   *   <li> can provide a Subject (Sink) for each price on which it's now possible to only play latest </li>
+   * </ul>
+   */
   private final Many<String> idsSubject = Sinks
       .many()
       .replay()
@@ -50,11 +35,11 @@ public class OandaCache {
 
   private final Map<String, Many<ClientPrice>> subjectsMap = new ConcurrentHashMap<>();
 
-  public void emitNewPrice2(ClientPrice clientPrice) {
+  public void emitNewPrice(ClientPrice clientPrice) {
     var isNew = new AtomicBoolean(false);
     subjectsMap
         .compute(clientPrice.getInstrument().toString(),
-            (String k, Many<ClientPrice> clientPrice$) -> {
+            (String __, Many<ClientPrice> clientPrice$) -> {
               if (clientPrice$ == null) {
                 isNew.set(true);
                 clientPrice$ = Sinks

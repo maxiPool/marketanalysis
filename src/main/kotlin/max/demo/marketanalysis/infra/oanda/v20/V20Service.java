@@ -46,7 +46,7 @@ public class V20Service {
     }
     try {
       var resp = ctx.pricing.get(request);
-      resp.getPrices().forEach(oandaCache::emitNewPrice2);
+      resp.getPrices().forEach(oandaCache::emitNewPrice);
 
       handleLastDataPointInTime(resp.getTime());
     } catch (Exception e) {
