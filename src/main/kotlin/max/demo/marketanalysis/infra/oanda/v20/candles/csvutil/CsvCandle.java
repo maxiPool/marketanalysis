@@ -12,13 +12,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({
-        "time",
-        "open",
-        "high",
-        "low",
-        "close",
-        "volume",
-        "isComplete"
+    "time",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "isComplete"
 })
 public class CsvCandle {
 

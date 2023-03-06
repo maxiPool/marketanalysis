@@ -63,9 +63,9 @@ public class CandlestickWriterSubscriber implements Subscriber<Candlestick> {
         contentToAppend = "%s\n%s".formatted(getSchemaHeader(), contentToAppend);
       }
       Files.writeString(
-              path,
-              contentToAppend,
-              StandardOpenOption.APPEND);
+          path,
+          contentToAppend,
+          StandardOpenOption.APPEND);
     } catch (IOException e) {
       log.error("Error while appending candles to file: {}", filePath);
     }

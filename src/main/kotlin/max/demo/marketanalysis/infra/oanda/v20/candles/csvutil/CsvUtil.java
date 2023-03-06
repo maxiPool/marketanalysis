@@ -20,15 +20,15 @@ public class CsvUtil {
     csvMapper = new CsvMapper();
 
     csvSchemaWithHeader = csvMapper
-            .schemaFor(CsvCandle.class)
-            .withHeader();
+        .schemaFor(CsvCandle.class)
+        .withHeader();
 
     csvSchema = csvMapper
-            .schemaFor(CsvCandle.class)
-            .withoutHeader();
+        .schemaFor(CsvCandle.class)
+        .withoutHeader();
 
     csvCandleSchema = csvMapper
-            .schemaFor(CsvCandle.class);
+        .schemaFor(CsvCandle.class);
 
     headerSchema = CsvSchema.emptySchema().withHeader();
   }
@@ -37,9 +37,9 @@ public class CsvUtil {
     String csvString = null;
     try {
       csvString = csvMapper
-              .writerFor(CsvCandle[].class)
-              .with(csvSchemaWithHeader)
-              .writeValueAsString(candles);
+          .writerFor(CsvCandle[].class)
+          .with(csvSchemaWithHeader)
+          .writeValueAsString(candles);
     } catch (JsonProcessingException e) {
       log.error("Error while converting candles array to csv", e);
     }
@@ -52,9 +52,9 @@ public class CsvUtil {
     String csvString = null;
     try {
       csvString = csvMapper
-              .writerFor(CsvCandle.class)
-              .with(csvSchema)
-              .writeValueAsString(candle);
+          .writerFor(CsvCandle.class)
+          .with(csvSchema)
+          .writeValueAsString(candle);
     } catch (JsonProcessingException e) {
       log.error("Error while converting candle to csv", e);
     }
@@ -65,9 +65,9 @@ public class CsvUtil {
   public static CsvCandle csvStringToCsvCandlePojo(String csvString) {
     try {
       var csvCandle = csvMapper
-              .readerFor(CsvCandle.class)
-              .with(csvSchemaWithHeader)
-              .<CsvCandle>readValue(csvString);
+          .readerFor(CsvCandle.class)
+          .with(csvSchemaWithHeader)
+          .<CsvCandle>readValue(csvString);
       log.info("CsvCandle: {}", csvCandle);
       return csvCandle;
     } catch (JsonProcessingException e) {
