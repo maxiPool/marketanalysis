@@ -9,6 +9,7 @@ import com.oanda.v20.primitives.Instrument;
 import com.oanda.v20.primitives.StringPrimitive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import max.demo.marketanalysis.infra.oanda.v20.properties.V20Properties;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,12 +17,13 @@ import java.util.stream.Collectors;
 
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static max.demo.marketanalysis.infra.oanda.v20.OandaAssetsUtil.INSTRUMENT_NAMES;
+import static max.demo.marketanalysis.infra.oanda.v20.model.EInstrument.INSTRUMENTS_LIST;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class V20Service {
+public class PricePollingService {
+
 
   private final V20Properties v20Properties;
   private final OandaCache oandaCache;
@@ -35,9 +37,9 @@ public class V20Service {
         .setApplication("PricePolling")
         .build();
 
-    var request = new PricingGetRequest(v20Properties.accountId(), INSTRUMENT_NAMES);
+    var request = new PricingGetRequest(v20Properties.accountId(), INSTRUMENTS_LIST);
 
-    poller.scheduleAtFixedRate(() -> poll(ctx, request), 0L, 1000L, MILLISECONDS);
+    poller.scheduleAtFixedRate(() -> poll(ctx, request), 0L, 100000L, MILLISECONDS);
   }
 
   private void poll(Context ctx, PricingGetRequest request) {

@@ -18,7 +18,7 @@ public class AnalysisService {
 
   private final Map<String, Integer> dataReceivedFromSink = new ConcurrentHashMap<>();
 
-  public void subscribeToPrices2() {
+  public void subscribeToPrices() {
     oandaCache
         .getSubjectIds()
         .subscribe(this::subscribeToNewSubject);

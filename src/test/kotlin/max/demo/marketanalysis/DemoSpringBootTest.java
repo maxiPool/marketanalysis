@@ -1,6 +1,6 @@
 package max.demo.marketanalysis;
 
-import max.demo.marketanalysis.infra.oanda.v20.V20Service;
+import max.demo.marketanalysis.infra.oanda.v20.PricePollingService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +15,11 @@ import java.util.Scanner;
 public class DemoSpringBootTest {
 
   @Autowired
-  private V20Service v20Service;
+  private PricePollingService pricePollingService;
 
   @Test
   void should_pollPrices() {
-    v20Service.pollPrices();
+    pricePollingService.pollPrices();
 
     Scanner scanner = new Scanner(System.in);
     scanner.nextLine(); // wait for user input before ending test
@@ -27,7 +27,7 @@ public class DemoSpringBootTest {
 
   @Test
   void should_getTradeableInstruments() {
-    v20Service.getTradeableInstrumentsForAccount();
+    pricePollingService.getTradeableInstrumentsForAccount();
   }
 
 }

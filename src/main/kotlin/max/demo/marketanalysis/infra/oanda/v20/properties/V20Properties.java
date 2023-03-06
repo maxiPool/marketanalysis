@@ -1,4 +1,4 @@
-package max.demo.marketanalysis.infra.oanda.v20;
+package max.demo.marketanalysis.infra.oanda.v20.properties;
 
 
 import com.oanda.v20.account.AccountID;
@@ -12,5 +12,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "infra.oanda.v20")
 public record V20Properties(String url,
                             String token,
-                            AccountID accountId) {
+                            AccountID accountId,
+                            Boolean isProduction,
+                            PricePollingProperties pricePolling,
+                            CandlestickProperties candlestick) {
 }
