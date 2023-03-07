@@ -9,6 +9,7 @@ import max.demo.marketanalysis.infra.oanda.v20.candles.csvutil.CsvCandle;
 import max.demo.marketanalysis.infra.oanda.v20.config.CandleRestClient;
 import max.demo.marketanalysis.infra.oanda.v20.model.EInstrument;
 import max.demo.marketanalysis.infra.oanda.v20.model.Rfc3339;
+import max.demo.marketanalysis.infra.oanda.v20.properties.V20Properties;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,8 @@ public class CandlestickService {
   private static final String TO = "to";
   private static final String COUNT = "count";
   private static final int MAX_CANDLE_COUNT_OANDA_API = 5_000;
-  public static final String TEMPLATE_CANDLE_FILE_PATH = "F:\\candles\\%s_candles_%s.csv";
 
+  private final V20Properties v20Properties;
   private final CandleRestClient candleRestClient;
   private final CandlestickMapper candlestickMapper;
 
@@ -86,7 +87,7 @@ public class CandlestickService {
   }
 
   @NotNull
-  private static List<InstrumentCandleRequestInfo> getInstrumentToGranularityToPath(
+  private List<InstrumentCandleRequestInfo> getInstrumentToGranularityToPath(
       List<EInstrument> instrumentList, List<CandlestickGranularity> granularityList) {
     return instrumentList
         .stream()
@@ -96,7 +97,7 @@ public class CandlestickService {
                 .builder()
                 .granularity(g)
                 .instrument(i)
-                .outputPath(TEMPLATE_CANDLE_FILE_PATH.formatted(i.toString(), g))
+                .outputPath(v20Properties.candlestick().outputPathTemplate().formatted(i.toString(), g))
                 .build()))
         .toList();
   }
