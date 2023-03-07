@@ -12,9 +12,11 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.Instant;
 import java.util.Scanner;
 
+import static com.oanda.v20.instrument.CandlestickGranularity.M15;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
+import static max.demo.marketanalysis.infra.oanda.v20.candles.CandlestickService.TEMPLATE_CANDLE_FILE_PATH;
 import static max.demo.marketanalysis.infra.oanda.v20.candles.CandlestickService.getLastCandle;
 import static max.demo.marketanalysis.infra.oanda.v20.model.EInstrument.USD_CAD;
 
@@ -25,7 +27,6 @@ import static max.demo.marketanalysis.infra.oanda.v20.model.EInstrument.USD_CAD;
 @ActiveProfiles({"local"})
 public class DemoCandlesticks {
 
-  private static final String TEMPLATE_CANDLE_FILE_PATH = "F:\\candles\\%s_candles_15m.csv";
   private static final String USD_CAD_FILE_PATH = TEMPLATE_CANDLE_FILE_PATH.formatted("usd_cad");
 
   @Autowired
@@ -38,7 +39,7 @@ public class DemoCandlesticks {
 
     var next = instrumentToPathMap.entrySet().iterator().next();
 
-    candlestickService.getCandlesFor(next.getKey(), next.getValue());
+    candlestickService.getCandlesFor(next.getKey(), M15, next.getValue());
 
     var s = new Scanner(System.in);
     s.nextLine();
@@ -49,7 +50,7 @@ public class DemoCandlesticks {
     var lastCandle = getLastCandle(USD_CAD_FILE_PATH);
     var plusOneMinute = Instant.parse(lastCandle.getTime().toString()).plus(15, MINUTES);
 
-    candlestickService.getCandlestickWithLastDate(USD_CAD, USD_CAD_FILE_PATH, plusOneMinute);
+    candlestickService.getCandlesFromTime(USD_CAD, USD_CAD_FILE_PATH, M15, plusOneMinute);
 
     var s = new Scanner(System.in);
     s.nextLine();
@@ -57,7 +58,7 @@ public class DemoCandlesticks {
 
   @Test
   void should_getCandlesticksFromOandaAPIWithCandleCount() {
-    candlestickService.getCandlestickWithCount(USD_CAD, USD_CAD_FILE_PATH, 5);
+    candlestickService.getCandlestickWithCount(USD_CAD, USD_CAD_FILE_PATH, M15, 5);
 
     var s = new Scanner(System.in);
     s.nextLine();

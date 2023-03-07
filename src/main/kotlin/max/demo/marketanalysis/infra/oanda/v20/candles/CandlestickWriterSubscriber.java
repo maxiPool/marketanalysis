@@ -53,7 +53,7 @@ public class CandlestickWriterSubscriber implements Subscriber<Candlestick> {
 
   @Override
   public void onComplete() {
-    log.info("csv candles: {}", csvCandles);
+    log.debug("csv candles: {}", csvCandles);
     var contentToAppend = String.join("", csvCandles);
 
     try {

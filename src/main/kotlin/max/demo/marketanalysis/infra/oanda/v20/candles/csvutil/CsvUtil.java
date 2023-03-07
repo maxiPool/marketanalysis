@@ -43,7 +43,7 @@ public class CsvUtil {
     } catch (JsonProcessingException e) {
       log.error("Error while converting candles array to csv", e);
     }
-    log.info("CsvString: {}", csvString);
+    log.debug("CsvString: {}", csvString);
     return csvString;
   }
 
@@ -58,7 +58,7 @@ public class CsvUtil {
     } catch (JsonProcessingException e) {
       log.error("Error while converting candle to csv", e);
     }
-    log.info("CsvString: {}", csvString);
+    log.debug("CsvString: {}", csvString);
     return csvString;
   }
 
@@ -68,7 +68,7 @@ public class CsvUtil {
           .readerFor(CsvCandle.class)
           .with(csvSchemaWithHeader)
           .<CsvCandle>readValue(csvString);
-      log.info("CsvCandle: {}", csvCandle);
+      log.debug("CsvCandle: {}", csvCandle);
       return csvCandle;
     } catch (JsonProcessingException e) {
       log.error("Error while converting candle to csv", e);

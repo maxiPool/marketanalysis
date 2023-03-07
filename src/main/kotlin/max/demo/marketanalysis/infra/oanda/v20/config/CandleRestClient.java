@@ -20,8 +20,6 @@ public class CandleRestClient {
 
   /**
    * Find candles for an instrument.
-   * <br />
-   * I see that I can get around 3500 candles back; For 15M granularity, this means ~36 business days or ~50 days.
    * <br /> <br />
    * I get back the following data:
    * <ul>
@@ -48,8 +46,7 @@ public class CandleRestClient {
         })
         .retrieve()
         .bodyToMono(GetCandlesResponse.class)
-        .flatMapIterable(GetCandlesResponse::getCandles)
-        .log();
-
+        .flatMapIterable(GetCandlesResponse::getCandles);
+//        .log();
   }
 }

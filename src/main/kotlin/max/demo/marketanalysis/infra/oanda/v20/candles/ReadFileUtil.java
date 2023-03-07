@@ -1,5 +1,7 @@
 package max.demo.marketanalysis.infra.oanda.v20.candles;
 
+import lombok.Builder;
+import lombok.With;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -10,36 +12,43 @@ import java.io.RandomAccessFile;
 
 @Slf4j
 @UtilityClass
-public class ReadCandlesCsvFileUtil {
+public class ReadFileUtil {
 
-  public static String[] getFirstAndLastLineFromFile(String fileName) {
-    var firstAndLastLine = new String[]{"", ""};
+  @With
+  @Builder
+  public record FirstAndLastLine(String first, String last) {
+    public static FirstAndLastLine empty() {
+      return new FirstAndLastLine("", "");
+    }
+  }
+
+  public static FirstAndLastLine getFirstAndLastLineFromFile(String fileName) {
     try (RandomAccessFile file = new RandomAccessFile(fileName, "r")) {
       var fileLength = file.length();
       if (fileLength == 0) {
-        return firstAndLastLine;
+        return FirstAndLastLine.empty();
       }
 
-      var endOfFistLinePointer = findEndOfFirstLine(file, fileLength);
-      firstAndLastLine[0] = readLineFromEnd(file, endOfFistLinePointer);
-
-      var endOfLastLinePointer = findEndOfLastLine(file, fileLength);
-      firstAndLastLine[1] = readLineFromEnd(file, endOfLastLinePointer);
+      return FirstAndLastLine
+          .builder()
+          .first(readLineFromEnd(file, findEndOfFirstLine(file, fileLength)))
+          .last(readLineFromEnd(file, findEndOfLastLine(file, fileLength)))
+          .build();
     } catch (IOException e) {
       log.error("Error while reading file: {}", fileName);
+      return FirstAndLastLine.empty();
     }
-    return firstAndLastLine;
   }
 
   public static String readFirstLineFromFile(String fileName) {
-    return readLineFromEndHelper(fileName, ReadCandlesCsvFileUtil::findEndOfFirstLine);
+    return readLineFromEndHelper(fileName, ReadFileUtil::findEndOfFirstLine);
   }
 
   /**
    * Reads last line from a large file by starting from the last byte. Assumes each line contains a newline char (\n).
    */
   public static String readLastLineFromFile(String fileName) {
-    return readLineFromEndHelper(fileName, ReadCandlesCsvFileUtil::findEndOfLastLine);
+    return readLineFromEndHelper(fileName, ReadFileUtil::findEndOfLastLine);
   }
 
   /**
