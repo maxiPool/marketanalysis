@@ -42,7 +42,14 @@ spring:
       fail_on_unknown_properties: false
       adjust_dates_to_context_time_zone: false
       use_big_decimal_for_floats: true
-
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQL81Dialect
 #  cloud:
 #    config:
 #      enabled: true
@@ -80,5 +87,12 @@ management:
 
 logging:
   level:
-    root: INFO
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+
+infra:
+  oanda:
+    v20:
+      devStreamUrl: "https://stream-fxpractice.oanda.com"
+      prodStreamUrl: "https://stream-fxtrade.oanda.com"
+      devRestUrl: "https://api-fxpractice.oanda.com"
+      prodRestUrl: "https://api-fxtrade.oanda.com"

@@ -18,21 +18,15 @@ public class OandaConfiguration {
 
   private final V20Properties v20Properties;
 
-  private static final String DEV_STREAM_URL = "https://stream-fxpractice.oanda.com";
-
-  private static final String PROD_STREAM_URL = "https://stream-fxtrade.oanda.com";
-
-  private static final String DEV_REST_URL = "https://api-fxpractice.oanda.com";
-
-  private static final String PROD_REST_URL = "https://api-fxtrade.oanda.com";
-
   /**
    * Get the Oanda stream url.
    *
    * @return Oanda stream url
    */
   public String getStreamUrl() {
-    return v20Properties.isProduction() ? PROD_STREAM_URL : DEV_STREAM_URL;
+    return v20Properties.isProduction()
+        ? v20Properties.prodStreamUrl()
+        : v20Properties.devStreamUrl();
   }
 
   /**
@@ -41,7 +35,9 @@ public class OandaConfiguration {
    * @return Oanda rest url
    */
   public String getRestUrl() {
-    return v20Properties.isProduction() ? PROD_REST_URL : DEV_REST_URL;
+    return v20Properties.isProduction()
+        ? v20Properties.prodRestUrl()
+        : v20Properties.devRestUrl();
   }
 
   @Bean
@@ -63,7 +59,7 @@ public class OandaConfiguration {
     return WebClient
         .builder()
         .exchangeStrategies(strategies)
-        .baseUrl(v20Properties.url())
+        .baseUrl(getRestUrl())
         .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(v20Properties.token()))
         .defaultHeader("Accept-Datetime-Format", "RFC3339")
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

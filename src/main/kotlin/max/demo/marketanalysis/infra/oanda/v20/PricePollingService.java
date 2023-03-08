@@ -32,7 +32,7 @@ public class PricePollingService {
   private volatile DateTime lastDataPointInTime = null;
 
   public void pollPrices() {
-    var ctx = new ContextBuilder(v20Properties.url())
+    var ctx = new ContextBuilder(v20Properties.devRestUrl())
         .setToken(v20Properties.token())
         .setApplication("PricePolling")
         .build();
@@ -72,7 +72,7 @@ public class PricePollingService {
   }
 
   public void getTradeableInstrumentsForAccount() {
-    var ctx = new ContextBuilder(v20Properties.url())
+    var ctx = new ContextBuilder(v20Properties.devRestUrl())
         .setToken(v20Properties.token())
         .setApplication("InstrumentsGetter")
         .build();

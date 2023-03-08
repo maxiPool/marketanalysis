@@ -1,7 +1,6 @@
 package max.demo.marketanalysis.infra.oanda.v20.config;
 
 import com.oanda.v20.instrument.Candlestick;
-import com.oanda.v20.instrument.CandlestickGranularity;
 import lombok.RequiredArgsConstructor;
 import max.demo.marketanalysis.infra.oanda.v20.model.EInstrument;
 import max.demo.marketanalysis.infra.oanda.v20.model.GetCandlesResponse;
@@ -14,7 +13,6 @@ import java.util.Map;
 public class CandleRestClient {
 
   private static final String CANDLES_ENDPOINT = "/v3/instruments/%s/candles";
-  private static final String GRANULARITY = "granularity";
 
   private final WebClient webClient;
 
@@ -29,7 +27,7 @@ public class CandleRestClient {
    *   <li> complete (boolean; true for all candles except the last one which isn't complete) </li>
    * </ul>
    */
-  public Flux<Candlestick> findBetween(EInstrument instrument, CandlestickGranularity granularity, Map<String, Object> queryParams) {
+  public Flux<Candlestick> getCandles(EInstrument instrument, Map<String, Object> queryParams) {
     var candlesEndpoint = CANDLES_ENDPOINT // example currency pair format: 'USD_CAD'
         .formatted(instrument.toString());
 
@@ -41,12 +39,10 @@ public class CandleRestClient {
           }
           return builder
               .path(candlesEndpoint)
-              .queryParam(GRANULARITY, granularity)
               .build();
         })
         .retrieve()
         .bodyToMono(GetCandlesResponse.class)
         .flatMapIterable(GetCandlesResponse::getCandles);
-//        .log();
   }
 }

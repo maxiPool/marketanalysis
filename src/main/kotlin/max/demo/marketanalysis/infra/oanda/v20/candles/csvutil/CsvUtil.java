@@ -12,9 +12,7 @@ public class CsvUtil {
 
   private static final CsvMapper csvMapper;
   private static final CsvSchema csvSchemaWithHeader;
-  private static final CsvSchema csvSchema;
-  private static final CsvSchema csvCandleSchema;
-  private static final CsvSchema headerSchema;
+  private static final CsvSchema csvSchemaWithoutHeader;
 
   static {
     csvMapper = new CsvMapper();
@@ -23,53 +21,29 @@ public class CsvUtil {
         .schemaFor(CsvCandle.class)
         .withHeader();
 
-    csvSchema = csvMapper
+    csvSchemaWithoutHeader = csvMapper
         .schemaFor(CsvCandle.class)
         .withoutHeader();
-
-    csvCandleSchema = csvMapper
-        .schemaFor(CsvCandle.class);
-
-    headerSchema = CsvSchema.emptySchema().withHeader();
   }
-
-  public static String candlesToCsv(CsvCandle[] candles) {
-    String csvString = null;
-    try {
-      csvString = csvMapper
-          .writerFor(CsvCandle[].class)
-          .with(csvSchemaWithHeader)
-          .writeValueAsString(candles);
-    } catch (JsonProcessingException e) {
-      log.error("Error while converting candles array to csv", e);
-    }
-    log.debug("CsvString: {}", csvString);
-    return csvString;
-  }
-
 
   public static String candleToCsv(CsvCandle candle) {
-    String csvString = null;
     try {
-      csvString = csvMapper
+      return csvMapper
           .writerFor(CsvCandle.class)
-          .with(csvSchema)
+          .with(csvSchemaWithoutHeader)
           .writeValueAsString(candle);
     } catch (JsonProcessingException e) {
       log.error("Error while converting candle to csv", e);
     }
-    log.debug("CsvString: {}", csvString);
-    return csvString;
+    return null;
   }
 
   public static CsvCandle csvStringToCsvCandlePojo(String csvString) {
     try {
-      var csvCandle = csvMapper
+      return csvMapper
           .readerFor(CsvCandle.class)
           .with(csvSchemaWithHeader)
-          .<CsvCandle>readValue(csvString);
-      log.debug("CsvCandle: {}", csvCandle);
-      return csvCandle;
+          .readValue(csvString);
     } catch (JsonProcessingException e) {
       log.error("Error while converting candle to csv", e);
     }

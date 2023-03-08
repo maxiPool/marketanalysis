@@ -41,7 +41,7 @@ public class CsvCandle {
   private Long volume;
 
   @JsonProperty("isComplete")
-  private Boolean isComplete;
+  private Integer isComplete;
 
   @JsonIgnore
   public static String getSchemaHeader() {

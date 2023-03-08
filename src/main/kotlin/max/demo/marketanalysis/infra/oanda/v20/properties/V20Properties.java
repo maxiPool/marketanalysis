@@ -10,7 +10,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @param accountId A valid v20 trading account ID that {@code TOKEN} has permissions to take action on
  */
 @ConfigurationProperties(prefix = "infra.oanda.v20")
-public record V20Properties(String url,
+public record V20Properties(String devStreamUrl,
+                            String prodStreamUrl,
+                            String devRestUrl,
+                            String prodRestUrl,
                             String token,
                             AccountID accountId,
                             Boolean isProduction,
