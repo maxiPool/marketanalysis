@@ -1,5 +1,6 @@
 src/main/resources/serviceAccountKey.json
 application-local.yml
+batch-job-output.txt
 
 HELP.md
 target/
