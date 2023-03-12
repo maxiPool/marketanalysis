@@ -1,8 +1,5 @@
 package max.demo.marketanalysis.infra.oanda.v20.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import max.demo.marketanalysis.infra.oanda.v20.properties.V20Properties;
 import org.springframework.context.annotation.Bean;
@@ -40,13 +37,13 @@ public class OandaConfiguration {
         : v20Properties.devRestUrl();
   }
 
-  @Bean
-  ObjectMapper oandaObjectMapper() {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(new JavaTimeModule());
-    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    return mapper;
-  }
+//  @Bean
+//  ObjectMapper oandaObjectMapper() {
+//    ObjectMapper mapper = new ObjectMapper();
+//    mapper.registerModule(new JavaTimeModule());
+//    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+//    return mapper;
+//  }
 
   @Bean
   WebClient oandaRestClient() {

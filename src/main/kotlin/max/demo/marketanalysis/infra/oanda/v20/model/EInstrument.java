@@ -129,6 +129,6 @@ public enum EInstrument {
   XPT_USD,
   ZAR_JPY;
 
-  public static final List<EInstrument> INSTRUMENTS_LIST = stream(EInstrument.values()).toList();
+  public static final List<EInstrument> INSTRUMENT_LIST = stream(EInstrument.values()).toList();
 
 }

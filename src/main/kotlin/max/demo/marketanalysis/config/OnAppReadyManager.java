@@ -12,8 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.oanda.v20.instrument.CandlestickGranularity.M1;
 import static com.oanda.v20.instrument.CandlestickGranularity.M15;
-import static max.demo.marketanalysis.infra.oanda.v20.model.EInstrument.INSTRUMENTS_LIST;
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static max.demo.marketanalysis.infra.oanda.v20.model.EInstrument.INSTRUMENT_LIST;
 
 @Component
 @RequiredArgsConstructor
@@ -30,17 +32,27 @@ public class OnAppReadyManager {
     var message = "OnAppReadyManager";
     log.info("[LAUNCHING] {}", message);
 
+    runAsync(this::candles);
+    runAsync(this::pricePolling);
+
+    log.info("[DONE] {}", message);
+  }
+
+  private void candles() {
+    if (v20Properties.candlestick().enabled()) {
+      var granularityList = List.of(M15, M1);
+      var instrumentList = INSTRUMENT_LIST;
+
+      candlestickService.logLastCandleTimesBreakdown(instrumentList, granularityList);
+      candlestickService.getCandlesForMany(instrumentList, granularityList);
+    }
+  }
+
+  private void pricePolling() {
     if (v20Properties.pricePolling().enabled()) {
       pricePollingService.pollPrices();
       analysisService.subscribeToPrices();
     }
-
-    if (v20Properties.candlestick().enabled()) {
-      var granularityList = List.of(M15);
-      candlestickService.getCandlesForMany(INSTRUMENTS_LIST, granularityList);
-    }
-
-    log.info("[DONE] {}", message);
   }
 
 }

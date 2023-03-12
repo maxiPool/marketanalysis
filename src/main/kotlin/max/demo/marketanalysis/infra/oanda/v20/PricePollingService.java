@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static max.demo.marketanalysis.infra.oanda.v20.model.EInstrument.INSTRUMENTS_LIST;
+import static max.demo.marketanalysis.infra.oanda.v20.model.EInstrument.INSTRUMENT_LIST;
 
 @Service
 @Slf4j
@@ -37,7 +37,7 @@ public class PricePollingService {
         .setApplication("PricePolling")
         .build();
 
-    var request = new PricingGetRequest(v20Properties.accountId(), INSTRUMENTS_LIST);
+    var request = new PricingGetRequest(v20Properties.accountId(), INSTRUMENT_LIST);
 
     poller.scheduleAtFixedRate(() -> poll(ctx, request), 0L, 100000L, MILLISECONDS);
   }

@@ -36,7 +36,7 @@ public class DemoCandlesticks {
   @Test
   void should_getCandlesFor() {
     var instrumentToPathMap = stream(EInstrument.values())
-        .collect(toMap(i -> i, i -> v20Properties.candlestick().outputPathTemplate().formatted(i.toString().toLowerCase())));
+        .collect(toMap(i -> i, i -> v20Properties.candlestick().outputPathTemplate().formatted(i.toString().toLowerCase(), M15)));
 
     var next = instrumentToPathMap.entrySet().iterator().next();
 
@@ -51,7 +51,7 @@ public class DemoCandlesticks {
     var lastCandle = getLastCandle(getUsdCadFilePath());
     var plusOneMinute = Instant.parse(lastCandle.getTime().toString()).plus(15, MINUTES);
 
-    candlestickService.getCandlesFromTime(USD_CAD, getUsdCadFilePath(), M15, plusOneMinute);
+    candlestickService.getCandlesFromTime(USD_CAD, M15, plusOneMinute);
 
     var s = new Scanner(System.in);
     s.nextLine();
@@ -59,7 +59,7 @@ public class DemoCandlesticks {
 
   @Test
   void should_getCandlesticksFromOandaAPIWithCandleCount() {
-    candlestickService.getCandlestickWithCount(USD_CAD, getUsdCadFilePath(), M15, 5);
+    candlestickService.getCandlestickWithCount(USD_CAD, M15, 5);
 
     var s = new Scanner(System.in);
     s.nextLine();
